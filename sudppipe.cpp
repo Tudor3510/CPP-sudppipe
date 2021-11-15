@@ -24,13 +24,13 @@
 #include <stdint.h>
 #include <time.h>
 #include <ctype.h>
-#include "acpdump2.h"
-#include "show_dump.h"
+#include "acpdump2.hpp"
+#include "show_dump.hpp"
 
 #ifdef _WIN32
     #pragma comment(lib, "ws2_32.lib")
     #include <winsock.h>
-    #include "winerr.h"
+    #include "winerr.hpp"
 
     #define close           closesocket
     #define sleep           Sleep

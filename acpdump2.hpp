@@ -27,7 +27,7 @@
 #else
     #include <sys/time.h>
 #endif
-#include "ip2.h"
+#include "ip2.hpp"
 
 #if defined ACPDUMP_LOCK && _WIN32
     #include <windows.h>
