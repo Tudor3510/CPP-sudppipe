@@ -109,7 +109,12 @@ static int (* sudp_vis)(char *, int) = NULL;  // modification for visualization 
 //static int (*mybind)(SOCKET s, const struct sockaddr *name, int namelen) = NULL;
 //static int (*myclose)(SOCKET s) = NULL;
 //static int (*myrecv)(SOCKET s, char *buf, int len, int flags) = NULL;
+
+#ifdef _WIN32
+static int (*myrecvfrom)(SOCKET s, char *buf, int len, int flags, struct sockaddr *from, int32_t *fromlen) = NULL;
+#else
 static int (*myrecvfrom)(SOCKET s, char *buf, int len, int flags, struct sockaddr *from, uint32_t *fromlen) = NULL;
+#endif
 //static int (*mysend)(SOCKET s, char **retbuf, int len, int flags) = NULL;
 static int (*mysendto)(SOCKET s, char **retbuf, int len, int flags, const struct sockaddr *to, int tolen) = NULL;
 
@@ -159,12 +164,11 @@ int main(int argc, char *argv[]) {
             selsock     = 0,
             i,
             len         = 0,
-         //   psz         = 0,
             hexdump     = 0,
             t,
             everyone    = 0,
             priority    = 0;
-    uint32_t psz = 0;
+    int32_t psz = 0;
     u16     port,
             lport,
             inject      = 0;
