@@ -45,6 +45,11 @@
     HINSTANCE   hLib    = NULL;
 
     void winerr(void);
+
+    #define RECVFROMF(X) \
+                    psz = sizeof(struct sockaddr_in); \
+                    len = recvfrom(X, buff, BUFFSZ, 0, (struct sockaddr *)&peerl, &psz); \
+                    if(len < 0) continue;
 #else
     #include <unistd.h>
     #include <sys/socket.h>
@@ -71,6 +76,11 @@
     void        *hLib   = NULL;
     #define SOCKET          int
     #define SOCKET_ERROR    (-1)
+
+    #define RECVFROMF(X) \
+                    psz = sizeof(struct sockaddr_in); \
+                    len = recvfrom(X, buff, BUFFSZ, 0, (struct sockaddr *)&peerl, (uint32_t *) &psz); \
+                    if(len < 0) continue;
 #endif
 
 //typedef uint8_t     char;
@@ -81,10 +91,10 @@ typedef uint32_t    u32;
 
 //#define VER         "0.4.1"
 #define BUFFSZ      0xffff
-#define RECVFROMF(X) \
-                    psz = sizeof(struct sockaddr_in); \
-                    len = recvfrom(X, buff, BUFFSZ, 0, (struct sockaddr *)&peerl, &psz); \
-                    if(len < 0) continue;
+// #define RECVFROMF(X) \
+//                     psz = sizeof(struct sockaddr_in); \
+//                     len = recvfrom(X, buff, BUFFSZ, 0, (struct sockaddr *)&peerl, &psz); \
+//                     if(len < 0) continue;
 #define SENDTOFC(X,Y) \
                     if(sendtof(sdl, buff, len, &c->peer, X) != len) { \
                         c = check_sd(&c->peer, 1); /* it's ever c->peer */ \
@@ -110,11 +120,7 @@ static int (* sudp_vis)(char *, int) = NULL;  // modification for visualization 
 //static int (*myclose)(SOCKET s) = NULL;
 //static int (*myrecv)(SOCKET s, char *buf, int len, int flags) = NULL;
 
-#ifdef _WIN32
 static int (*myrecvfrom)(SOCKET s, char *buf, int len, int flags, struct sockaddr *from, int32_t *fromlen) = NULL;
-#else
-static int (*myrecvfrom)(SOCKET s, char *buf, int len, int flags, struct sockaddr *from, uint32_t *fromlen) = NULL;
-#endif
 //static int (*mysend)(SOCKET s, char **retbuf, int len, int flags) = NULL;
 static int (*mysendto)(SOCKET s, char **retbuf, int len, int flags, const struct sockaddr *to, int tolen) = NULL;
 
