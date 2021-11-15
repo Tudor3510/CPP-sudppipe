@@ -682,10 +682,6 @@ void loaddll(char *fname, char *par) {
 
     printf("- load library %s\n", fname);
 
-      //  #define GETFUNC(x,y)    x = (void *)GetProcAddress(hLib, y); \
-      //                      if(!quiet) printf("  %-10s %p\n", y, x);
-      //                      //if(!x) winerr();
-
     LOADDLL;
     //GETFUNC(sudp_init,  "sudp_init");
     //GETFUNC(sudp_pck,   "sudp_pck");
