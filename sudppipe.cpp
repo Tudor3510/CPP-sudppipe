@@ -716,6 +716,22 @@ void loaddll(char *fname, char *par) {
     mysendto = (int (*)(SOCKET s, char **retbuf, int len, int flags, const sockaddr *to, int tolen)) GetProcAddress(hLib, "mysendto");
     if(!quiet) printf("  %-10s %p\n", "mysendto", mysendto);
 
+#else
+    sudp_init = (int(*)(char *)) dlsym(hLib, "sudp_init");
+    if(!quiet) printf("  %-10s %p\n", "sudp_init", sudp_init);
+
+    sudp_pck = (int(*)(char *, int)) dlsym(hLib, "sudp_pck");
+    if(!quiet) printf("  %-10s %p\n", "sudp_pck", sudp_pck);
+
+    sudp_vis = (int(*)(char *, int)) dlsym(hLib, "sudp_vis");
+    if(!quiet) printf("  %-10s %p\n", "sudp_vis", sudp_vis);
+
+    myrecvfrom = (int (*)(int s, char *buf, int len, int flags, sockaddr *from, int *fromlen)) dlsym(hLib, "myrecvfrom");
+    if(!quiet) printf("  %-10s %p\n", "myrecvfrom", myrecvfrom);
+
+    mysendto = (int (*)(int s, char **retbuf, int len, int flags, const sockaddr *to, int tolen)) dlsym(hLib, "mysendto");
+    if(!quiet) printf("  %-10s %p\n", "mysendto", mysendto);
+
 #endif
 
     if(sudp_init && sudp_init(par)) {
