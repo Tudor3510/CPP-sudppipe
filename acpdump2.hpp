@@ -249,10 +249,13 @@ void acp_dump(FILE *fd, int type, int protocol, uint32_t src_ip, uint16_t src_po
         return;
     }
 
+#ifdef _WIN32
     // use the following if gettimeofday doesn't exist on Windows
     acp_pck.ts.tv_sec  = time(NULL);
     acp_pck.ts.tv_usec = GetTickCount();
-    // gettimeofday((struct timeval *)&(acp_pck.ts), NULL);
+#else
+    gettimeofday((struct timeval *)&(acp_pck.ts), NULL);
+#endif
 
     acp_pck.caplen   = sizeof(ethdata) + size;
     acp_pck.len      = sizeof(ethdata) + size;
