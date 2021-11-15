@@ -682,12 +682,34 @@ void loaddll(char *fname, char *par) {
 
     printf("- load library %s\n", fname);
 
+      //  #define GETFUNC(x,y)    x = (void *)GetProcAddress(hLib, y); \
+      //                      if(!quiet) printf("  %-10s %p\n", y, x);
+      //                      //if(!x) winerr();
+
     LOADDLL;
-    GETFUNC(sudp_init,  "sudp_init");
-    GETFUNC(sudp_pck,   "sudp_pck");
-    GETFUNC(sudp_vis,   "sudp_vis");
-    GETFUNC(myrecvfrom, "myrecvfrom");
-    GETFUNC(mysendto,   "mysendto");
+    //GETFUNC(sudp_init,  "sudp_init");
+    //GETFUNC(sudp_pck,   "sudp_pck");
+    //GETFUNC(sudp_vis,   "sudp_vis");
+    //GETFUNC(myrecvfrom, "myrecvfrom");
+    //GETFUNC(mysendto,   "mysendto");
+
+#ifdef _WIN32
+    sudp_init = (int(*)(char *)) GetProcAddress(hLib, "sudp_init");
+    if(!quiet) printf("  %-10s %p\n", "sudp_init", sudp_init);
+
+    sudp_pck = (int(*)(char *, int)) GetProcAddress(hLib, "sudp_pck");
+    if(!quiet) printf("  %-10s %p\n", "sudp_pck", sudp_pck);
+
+    sudp_vis = (int(*)(char *, int)) GetProcAddress(hLib, "sudp_vis");
+    if(!quiet) printf("  %-10s %p\n", "sudp_vis", sudp_vis);
+
+    myrecvfrom = (int (*)(SOCKET s, char *buf, int len, int flags, sockaddr *from, int *fromlen)) GetProcAddress(hLib, "myrecvfrom");
+    if(!quiet) printf("  %-10s %p\n", "myrecvfrom", myrecvfrom);
+
+    mysendto = (int (*)(SOCKET s, char **retbuf, int len, int flags, const sockaddr *to, int tolen)) GetProcAddress(hLib, "mysendto");
+    if(!quiet) printf("  %-10s %p\n", "mysendto", mysendto);
+
+#endif
 
     if(sudp_init && sudp_init(par)) {
         fprintf(stderr, "\nError: plugin initialization failed\n\n");
