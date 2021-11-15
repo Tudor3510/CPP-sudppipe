@@ -73,13 +73,13 @@
     #define SOCKET_ERROR    (-1)
 #endif
 
-typedef uint8_t     u8;
+//typedef uint8_t     char;
 typedef uint16_t    u16;
 typedef uint32_t    u32;
 
 
 
-#define VER         "0.4.1"
+//#define VER         "0.4.1"
 #define BUFFSZ      0xffff
 #define RECVFROMF(X) \
                     psz = sizeof(struct sockaddr_in); \
@@ -99,9 +99,9 @@ typedef uint32_t    u32;
 
 
 // default: __cdecl
-static int (* sudp_init)(u8 *)     = NULL;  // initialization
-static int (* sudp_pck)(u8 *, int) = NULL;  // modification of the packet
-static int (* sudp_vis)(u8 *, int) = NULL;  // modification for visualization only
+static int (* sudp_init)(char *)     = NULL;  // initialization
+static int (* sudp_pck)(char *, int) = NULL;  // modification of the packet
+static int (* sudp_vis)(char *, int) = NULL;  // modification for visualization only
 
 //static SOCKET (*mysocket)(int af, int type, int protocol) = NULL;
 //static int (*myconnect)(SOCKET s, const struct sockaddr *name, int namelen) = NULL;
@@ -135,9 +135,9 @@ int         multisock       = 0,
 int sendtof(int s, char *buf, int len, struct sockaddr_in *to, int do_mysendto);
 int bind_udp_socket(struct sockaddr_in *peer, in_addr_t iface, u16 port);
 struct clients_struct *check_sd(struct sockaddr_in *peer, int force_remove);
-struct sockaddr_in *create_peer_array(u8 *list, u16 default_port);
-void show_peer_array(u8 *str, struct sockaddr_in *peer);
-void loaddll(u8 *fname, u8 *par);
+struct sockaddr_in *create_peer_array(char *list, u16 default_port);
+void show_peer_array(char *str, struct sockaddr_in *peer);
+void loaddll(char *fname, char *par);
 in_addr_t resolv(char *host);
 void std_err(void);
 
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
     u16     port,
             lport,
             inject      = 0;
-    u8      tmp[16],
+    char      tmp[16],
             *buff       = NULL,
             *acpfile    = NULL,
             *dllname    = NULL,
@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
     setbuf(stderr, NULL);
 
     fputs("\n"
-        "Simple UDP proxy/pipe "VER"\n"
+        "Simple UDP proxy/pipe 0.4.1\n"
         "by Luigi Auriemma\n"
         "e-mail: aluigi@autistici.org\n"
         "web:    aluigi.org\n"
@@ -322,7 +322,7 @@ int main(int argc, char *argv[]) {
     if(select(sdl + 1, &readset, NULL, NULL, NULL)
       < 0) std_err();
 
-    buff = malloc(BUFFSZ);
+    buff = (char *) malloc(BUFFSZ);
     if(!buff) std_err();
     clients = NULL;
 
@@ -562,7 +562,7 @@ struct clients_struct *check_sd(struct sockaddr_in *peer, int force_remove) {
     if((peer->sin_addr.s_addr == INADDR_ANY) || (peer->sin_addr.s_addr == INADDR_NONE) || !peer->sin_port) return(NULL);
 
 multisock_doit:
-    c = malloc(sizeof(struct clients_struct));
+    c = (clients_struct*) malloc(sizeof(struct clients_struct));
     if(!c) return(NULL);
     if(prev) {
         prev->next = c;
@@ -593,17 +593,17 @@ multisock_doit:
 
 
 
-struct sockaddr_in *create_peer_array(u8 *list, u16 default_port) {
+struct sockaddr_in *create_peer_array(char *list, u16 default_port) {
     struct sockaddr_in *ret;
     int     i,
             size = 1;
     u16     port;
-    u8      *p1,
+    char      *p1,
             *p2;
 
     for(p2 = list; (p1 = strchr(p2, ',')); size++, p2 = p1 + 1);
 
-    ret = calloc(size + 1, sizeof(struct sockaddr_in));
+    ret = (sockaddr_in*) calloc(size + 1, sizeof(struct sockaddr_in));
     if(!ret) std_err();
 
     for(i = 0;;) {
@@ -631,7 +631,7 @@ struct sockaddr_in *create_peer_array(u8 *list, u16 default_port) {
 
 
 
-void show_peer_array(u8 *str, struct sockaddr_in *peer) {
+void show_peer_array(char *str, struct sockaddr_in *peer) {
     int     i;
 
     fputs(str, stderr);
@@ -677,7 +677,7 @@ int bind_udp_socket(struct sockaddr_in *peer, in_addr_t iface, u16 port) {
 
 
 
-void loaddll(u8 *fname, u8 *par) {
+void loaddll(char *fname, char *par) {
     if(!fname) return;
 
     printf("- load library %s\n", fname);
